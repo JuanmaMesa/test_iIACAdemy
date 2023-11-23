@@ -1,4 +1,4 @@
-package nose;
+package RPG;
 
 public class Inicio {
 
