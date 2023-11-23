@@ -7,16 +7,10 @@ public class App_Rpg {
 	public static void main(String[] args) {
 		
 		
-		
-		
-		
-
-	     //1
 		createNPCSellers();
 		ToSeeNPCSellers();
 		
 		
-		//2
 		
 		addItemToNPC("Aragon", new Item("Pistola", "arma", 25.5,1));
 		addItemToNPC("Aragon", new Item("balas", "arma", 25.5,1));
@@ -25,8 +19,7 @@ public class App_Rpg {
 		addItemToNPC("Stuard", new Item("Pistola", "arma", 16.4,1));
 		
 		
-		//3
-	sellerInLocation("town");
+	
 		
 	}
 	
