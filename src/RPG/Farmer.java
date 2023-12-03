@@ -7,7 +7,7 @@ public class Farmer extends NPC{
 	private final static double WEAR = 0.15;
 
 	public Farmer(String name, String location) {
-		super("Farmer",name, location);
+		super(name, location,"Farmer");
 		
 	}
 
@@ -15,15 +15,27 @@ public class Farmer extends NPC{
 	public void add_item(Item item) throws InventariFullException{
 		
 		if(super.getInventory().size() >= MAX_ITEM) {
-			throw new InventariFullException("El inventario lleno, El vendedor no puede comprar el item ");
+			throw new InventariFullException("El inventario lleno, El vendedor no puede obtener el item ");
 			
 		}
-		item.setPrice(item.getPrice()+TAX);
+		item.setWear(item.getWear()+WEAR);
 		super.getInventory().add(item);
-		System.out.println("Item añadido correctamento al inventario");
-		
-		
+	
+	}
+
+	@Override
+	public Item sell_item(Item item) {
+		item.setPrice(item.getPrice()+ TAX);
+		return item;
 		
 	}
+
+	@Override
+	public Item remove_item(Item item) {
+		// TODO borrar item despues de venderlo
+		return null;
+	}
+	
+
 
 }

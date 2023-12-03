@@ -1,124 +1,133 @@
 package RPG;
 import java.util.*;
+import RPG.GameControler;
+import RPG.GameControler.CharacterType;
+
 
 public class App_Rpg {
-	public static ArrayList<NPC>listAllNpcSellers = new ArrayList<>();
+	
 
 	public static void main(String[] args) {
 		
+		GameControler gameControler = new GameControler();
 		
-		createNPCSellers();
-		ToSeeNPCSellers();
+		// 1. creamos vendedores e items en el juego.
+		gameControler.createNPCSellers();
+		gameControler.createItems();
 		
-		
-		
-		addItemToNPC("Aragon", new Item("Pistola", "arma", 25.5,1));
-		addItemToNPC("Aragon", new Item("balas", "arma", 25.5,1));
-		addItemToNPC("Aragon", new Item("cuerda", "equipamiento", 25.5,1));
-		addItemToNPC("Aragon", new Item("Piedra misteriosa", "objeto", 25.5,1));// ocurrira una exceptionn 
-		addItemToNPC("Stuard", new Item("Pistola", "arma", 16.4,1));
-		
-		
+
 	
+		// 2. Añadir un item al inventario de un vendedor.*
+		System.out.println("\n--- Agregando items a los NPC ---");
+		gameControler.addItemToInventory("Reginna", "Pistola");
+		gameControler.addItemToInventory("Reginna", "cuerda");
+		gameControler.addItemToInventory("Reginna", "Pistola");
+		gameControler.addItemToInventory("Reginna", "Pistola");// mostrando error por inventario lleno
+		gameControler.addItemToInventory("Martha", "Pistola");
+		gameControler.addItemToInventory("Martha", "Lanzallamas");
 		
-	}
-	
-	public static void createNPCSellers() {
 		
-		listAllNpcSellers.add(new Thief("Aragon", "city"));
-		listAllNpcSellers.add(new Thief("Reginna", "Asgard"));
-		listAllNpcSellers.add(new Farmer("Stuard", "city"));
-		listAllNpcSellers.add(new Trader("Wilson", "town"));
-		listAllNpcSellers.add(new Trader("Marta", "Asgard"));
 		
-	}
-	
-	public static void ToSeeNPCSellers() {
-		System.out.println("--Lista NPC Venderdores--");
-		listAllNpcSellers.forEach(n -> System.out.println(n.getName()+" ("+n.getType()+")"));
-	}
-	
-	public static void ToseeInventoryToNPC(String name) {
+		// 3. Ver el item mas barato en una ciudad especifica.
+		System.out.println("-----");
+		String location = "Asgard";
+		Item cheapestItem = gameControler.toSeeItemCheapest(location);
 		
-		NPC npc = findByName(name);
-		if(npc != null) {
-			npc.toSeeInventory();
-			
-			}
-	}
-		
-	public static void addItemToNPC(String name, Item item) {
-		NPC npc = findByName(name);
-		if(npc != null) {
-			try {
-				npc.add_item(item);
-				
-			} catch (InventariFullException e) {
-			System.out.println("InventoryFUllException: "+ e.getMessage());
-			}
-		}
-		else {
-			System.out.println("No se ha encontrado el NPC que buscas");
+		if(cheapestItem != null) {
+			System.out.println("El item más barato en "+location+ " es: "+cheapestItem.toString());
+					
+		}else {
+			System.out.println("No se encontro ningun item en la ciudad");
 		}
 		
-	}
-	
-	public static ArrayList<NPC> sellerInLocation(String name) {
-		ArrayList <NPC> listNPCtoLocation  = new ArrayList<>();
 		
-		for(NPC npc : listAllNpcSellers) {
-			if(npc.getLocation().equalsIgnoreCase(name)) {
-				listNPCtoLocation.add(npc);
-			}else {
-				System.out.println("No se pudo encontrar a ningun vendedor en la ciudad");
-			}
-			
+		// 4.  Consultar los Items de un vendedor.
+		String nameNPC = "Reginna";
+		String nameFarmer = "Martha";
+		System.out.println("\nEl inventario de "+nameNPC+":");
+		gameControler.toSeeInventory(nameNPC, CharacterType.SELLER);
+	
+		
+		// 5. crear un comprador
+		gameControler.createBuyers();
+		
+		
+		// 6.Realizar la compra de un item
+		
+		String buyer = "magneto";
+		System.out.println("\n-- Comprando items --");
+		gameControler.toBuy(buyer, nameNPC, "pistola");
+		gameControler.toBuy(buyer, nameFarmer, "cuerda");// Item no encontrado
+		gameControler.toBuy(buyer, nameFarmer, "pistola");// ver la diferencia con taxas
+		
+		
+		
+		// 7.Consultar los items de un comprador
+		System.out.println("\n Inventario de "+buyer);
+		gameControler.toSeeInventory(buyer, CharacterType.BUYER);
+		
+		
+		//8. Consultar todos los vendedores que hay en una ciudad
+		System.out.println("\n -- vendedores en la ciudad escogida --");
+	
+		List<Character> charactersInCity = gameControler.toSeeCharacterInCity(location,CharacterType.SELLER);
+		
+		if( charactersInCity.isEmpty()) {
+			System.out.println("No hay nadie en la ciudad ");
+		}else {
+			charactersInCity.forEach(n -> System.out.println(n.getName()));
 		}
-		return listNPCtoLocation;
 		
-		}
-	
-	
-	
-	
-	public static void toSeeCheapestItem(String name) {
 		
-		ArrayList<NPC>listNpcCity = sellerInLocation(name);
-		ArrayList<Item>listAllItems = new ArrayList <>();
+		// 9 - Consultar todos los compradores que hay en una ciudad.**
+		System.out.println("\n -- vendedores en la ciudad escogida --");
+		List<Character> charactersInCityBuyers = gameControler.toSeeCharacterInCity(location,CharacterType.BUYER);
 		
-		for( NPC npc: listNpcCity) {
-			listAllItems.addAll(npc.getInventory());
+
+		if( charactersInCityBuyers.isEmpty()) {
+			System.out.println("No hay nadie en la ciudad ");
+		}else {
+			charactersInCityBuyers.forEach(n -> System.out.println(n.getName()));
 		}
 		
-		Collections.sort(listAllItems, new ItemComparator());
-		Item CheapestItem = listAllItems.get(0);
-		System.out.println(CheapestItem);
+		
+		// 10 - Mostrar todos los ítems de un determinado tipo ordenados por precio (asc). **
+		String nameTypeItem = "Arma";
+		System.out.println("-- Lista de items --");
+		List<Item>listOfTypeItem = gameControler.seeTypeItem(nameTypeItem);
+		
+		if( listOfTypeItem.isEmpty()) {
+			System.out.println("NO hay Items de este typo");
+		}else {
+		listOfTypeItem.forEach(n -> System.out.println("Objeto: "+ n.getName()+" precio: "+n.getPrice()));
+		}
+	
 		
 		
+		
+		
+		
+		
+		
+		
+		
+
+		
+	
 		
 		
 		
 	}
+
 		
 	
-	public static NPC findByCity(String name) {
-		for(NPC n: listAllNpcSellers) {
-			if(n.getLocation().equalsIgnoreCase(name)) {
-				return n;
-			}
-		}return null;
 		
-	}
+		
+	
+
 	
 	
-	public static NPC findByName(String name) {
-		for(NPC n: listAllNpcSellers) {
-			if(n.getName().equalsIgnoreCase(name)) {
-				return n;
-			}
-		}return null;
-		
-	}
+	
 	
 
 }
